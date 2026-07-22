@@ -1,0 +1,24 @@
+{
+  "name": "brightline-frontend",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "@privy-io/react-auth": "^1.88.0",
+    "socket.io-client": "^4.8.0",
+    "recharts": "^2.13.0",
+    "axios": "^1.7.7",
+    "ethers": "^6.13.0"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-react": "^4.3.4",
+    "vite": "^5.4.11"
+  }
+}
