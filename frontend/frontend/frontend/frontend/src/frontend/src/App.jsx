@@ -1,6 +1,6 @@
-import { useState } from 'react'
 import { PrivyProvider } from '@privy-io/react-auth'
 import SuggestMarket from './components/SuggestMarket.jsx'
+import MarketList from './components/MarketList.jsx'
 
 function App() {
   return (
@@ -24,7 +24,8 @@ function App() {
           </div>
         </header>
 
-        <main className="max-w-6xl mx-auto p-6">
+        <main className="max-w-6xl mx-auto p-6 space-y-16">
+          <MarketList />
           <SuggestMarket />
         </main>
       </div>
