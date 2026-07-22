@@ -2,6 +2,7 @@ import { PrivyProvider } from '@privy-io/react-auth'
 import Header from './components/Header.jsx'
 import MarketList from './components/MarketList.jsx'
 import SuggestMarket from './components/SuggestMarket.jsx'
+import Footer from './components/Footer.jsx'
 
 function App() {
   return (
@@ -15,13 +16,15 @@ function App() {
         },
       }}
     >
-      <div className="min-h-screen bg-zinc-950 text-white">
+      <div className="min-h-screen bg-zinc-950 text-white flex flex-col">
         <Header />
 
-        <main className="max-w-6xl mx-auto p-6 space-y-16">
+        <main className="flex-1 max-w-6xl mx-auto p-6 space-y-16 w-full">
           <MarketList />
           <SuggestMarket />
         </main>
+
+        <Footer />
       </div>
     </PrivyProvider>
   )
