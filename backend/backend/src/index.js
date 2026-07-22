@@ -9,6 +9,7 @@ import rateLimit from 'express-rate-limit'
 
 import suggestionsRouter from './routes/suggestions.js'
 import marketsRouter from './routes/markets.js'
+import adminRouter from './routes/admin.js'
 import { startCronJobs } from './services/cron.js'
 
 dotenv.config()
@@ -40,6 +41,7 @@ app.use(limiter)
 // Routes
 app.use('/api/suggestions', suggestionsRouter)
 app.use('/api/markets', marketsRouter)
+app.use('/api/admin', adminRouter)
 
 app.get('/health', (req, res) => {
   res.json({ 
@@ -66,7 +68,6 @@ const mongoUri = process.env.MONGODB_URI || 'mongodb://localhost:27017/brightlin
 mongoose.connect(mongoUri)
   .then(() => {
     console.log('MongoDB connected')
-    // Start cron jobs after database is ready
     startCronJobs(io)
   })
   .catch((err) => console.error('MongoDB connection error:', err))
