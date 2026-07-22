@@ -9,6 +9,7 @@ import rateLimit from 'express-rate-limit'
 
 import suggestionsRouter from './routes/suggestions.js'
 import marketsRouter from './routes/markets.js'
+import { startCronJobs } from './services/cron.js'
 
 dotenv.config()
 
@@ -31,8 +32,8 @@ app.use(express.json())
 
 // Rate limiting
 const limiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 100
+  windowMs: 15 * 60 * 1000,
+  max: 200
 })
 app.use(limiter)
 
@@ -41,7 +42,10 @@ app.use('/api/suggestions', suggestionsRouter)
 app.use('/api/markets', marketsRouter)
 
 app.get('/health', (req, res) => {
-  res.json({ status: 'ok', time: new Date().toISOString() })
+  res.json({ 
+    status: 'ok', 
+    time: new Date().toISOString() 
+  })
 })
 
 // Socket.io
@@ -60,7 +64,11 @@ io.on('connection', (socket) => {
 // Connect to MongoDB
 const mongoUri = process.env.MONGODB_URI || 'mongodb://localhost:27017/brightline'
 mongoose.connect(mongoUri)
-  .then(() => console.log('MongoDB connected'))
+  .then(() => {
+    console.log('MongoDB connected')
+    // Start cron jobs after database is ready
+    startCronJobs(io)
+  })
   .catch((err) => console.error('MongoDB connection error:', err))
 
 const PORT = process.env.PORT || 3001
