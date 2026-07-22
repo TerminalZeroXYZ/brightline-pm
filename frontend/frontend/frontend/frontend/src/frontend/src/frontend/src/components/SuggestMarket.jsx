@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { usePrivy } from '@privy-io/react-auth'
-import axios from 'axios'
+import { submitSuggestion } from '../lib/api.js'
 
 export default function SuggestMarket() {
   const { login, authenticated, user } = usePrivy()
@@ -14,7 +14,7 @@ export default function SuggestMarket() {
 
   const handleSubmit = async (e) => {
     e.preventDefault()
-    
+
     if (!authenticated) {
       login()
       return
@@ -24,20 +24,18 @@ export default function SuggestMarket() {
     setStatus('Submitting your idea...')
 
     try {
-      // This will call your backend later
-      const response = await axios.post(
-        `${import.meta.env.VITE_API_URL || 'http://localhost:3001'}/api/suggestions`,
-        {
-          ...form,
-          suggestedBy: user?.id || 'anonymous'
-        }
-      )
+      const response = await submitSuggestion({
+        ...form,
+        suggestedBy: user?.id || 'anonymous'
+      })
 
-      setStatus(`Success! Your idea scored ${response.data.grokScore || 'N/A'}. Waiting for review.`)
+      setStatus(
+        `Success! Score: ${response.data.grokScore}. Status: ${response.data.status}`
+      )
       setForm({ title: '', description: '', isScalar: false })
     } catch (error) {
       console.error(error)
-      setStatus('Submitted locally (backend not connected yet). Thank you!')
+      setStatus('Something went wrong. Please try again later.')
     } finally {
       setLoading(false)
     }
@@ -45,21 +43,20 @@ export default function SuggestMarket() {
 
   return (
     <div className="max-w-2xl mx-auto">
-      <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-8 shadow-xl">
+      <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-8">
         <h2 className="text-3xl font-bold mb-2">Suggest a Market</h2>
         <p className="text-zinc-400 mb-6">
-          Propose a new prediction market about Brightline train safety incidents.
-          Community ideas help create more useful markets.
+          Propose a new prediction market about Brightline train safety.
         </p>
 
         {!authenticated && (
           <div className="mb-6 p-4 bg-amber-900/30 border border-amber-700 rounded-lg">
-            <p className="text-amber-200 text-sm">
+            <p className="text-amber-200 text-sm mb-3">
               Please log in to submit a market idea.
             </p>
             <button
               onClick={login}
-              className="mt-3 px-4 py-2 bg-amber-600 hover:bg-amber-500 rounded-lg text-sm font-medium"
+              className="px-4 py-2 bg-amber-600 hover:bg-amber-500 rounded-lg text-sm font-medium"
             >
               Log In
             </button>
@@ -88,7 +85,7 @@ export default function SuggestMarket() {
             <textarea
               required
               rows={5}
-              placeholder="Describe the market and how it should be resolved (e.g. based on official FRA reports)"
+              placeholder="Describe the market and how it should be resolved (official FRA / NTSB data preferred)"
               value={form.description}
               onChange={(e) => setForm({ ...form, description: e.target.value })}
               className="w-full px-4 py-3 bg-zinc-800 border border-zinc-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500"
@@ -100,17 +97,17 @@ export default function SuggestMarket() {
               type="checkbox"
               checked={form.isScalar}
               onChange={(e) => setForm({ ...form, isScalar: e.target.checked })}
-              className="w-5 h-5 rounded border-zinc-600 text-emerald-500 focus:ring-emerald-500"
+              className="w-5 h-5"
             />
             <span className="text-zinc-300">
-              Scalar market (predict exact number instead of Yes/No)
+              Scalar market (predict the exact number)
             </span>
           </label>
 
           <button
             type="submit"
             disabled={loading}
-            className="w-full py-4 bg-emerald-600 hover:bg-emerald-500 disabled:bg-zinc-700 rounded-xl font-semibold text-lg transition-colors"
+            className="w-full py-4 bg-emerald-600 hover:bg-emerald-500 disabled:bg-zinc-700 rounded-xl font-semibold text-lg"
           >
             {loading ? 'Submitting...' : 'Submit Market Idea'}
           </button>
